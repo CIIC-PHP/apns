@@ -12,7 +12,7 @@ drop table if exists `apns_user`;
 create table `apns_user` (
     `deviceToken` char(80) not null,
     `createAt` timestamp not null default current_timestamp,
-    `type` enum('dev','pro') not null default 'dev',
+    `type` enum('dev','pro','nil') not null default 'nil',
     `aid` char(64) not null,
     primary key(`deviceToken`)
 );

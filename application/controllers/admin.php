@@ -12,20 +12,45 @@ class Admin extends CI_Controller {
     }
     
 	public function index() {
-		$this->load->view('admin');
+		$this->login();
 	}
+    
+    public function login() {
+        $submit = $this->input->post('submit');
+        if (empty($submit)) {
+            $this->load->view('admin/login');
+            return;
+        }
+        $account = $this->input->post('account');
+        $password = $this->input->post('password');
+        
+        $admin = $this->AdminModel->find(array(
+            'account' => $account,
+        ), 1, 0);
+        
+        print_r($admin);
+        echo '<hr/>';
+        echo $account;
+        echo '<hr/>';
+        echo md5($password);
+    }
     
     public function show($page = 1) {
 		$size = 10;
 		$page = $page < 1 ? 1 : $page;
 		$total = $this->AdminModel->count();
 		$page = ceil($total / $size) < $page ? ceil($total / $size) : $page;
+		$list = $this->AdminModel->find(array(), $size, ($page - 1) * $size);
 		
-		$config['base_url'] = site_url("admin/show/");
-		$config['use_page_numbers'] = true;
-		$config['total_rows'] = $total;
-		$config['per_page'] = 20;
-		$this->pagination->initialize($config);
+		$this->pagination->initialize(array(
+			'base_url' => site_url('admin/show/'),
+			'use_page_numbers' => true,
+			'total_rows' => $total,
+			'per_page' => $size,
+		));
+		
+		echo '<pre>'.print_r($list, true).'</pre>';
+		echo '<hr/>';
 		echo $this->pagination->create_links();
 	}
 	
@@ -37,5 +62,10 @@ class Admin extends CI_Controller {
 			$admin->authority = '';
 			$admin->add();
 		}
+	}
+	
+	public function test($appId = '', $deviceToken) {
+		echo $arg1.'<hr/>';
+		echo $arg2.'<hr/>';
 	}
 }
