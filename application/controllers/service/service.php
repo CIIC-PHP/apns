@@ -8,9 +8,6 @@ class Service extends CI_Controller {
         parent::__construct();
     }
     
-    public function __before() {
-    }
-    
 	public function index() {
 	}
     
@@ -29,4 +26,6 @@ class Service extends CI_Controller {
             echo $deviceToken;
         }
     }
+    
+    
 }
