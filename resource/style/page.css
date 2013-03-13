@@ -1,6 +1,6 @@
 body {
     padding: 40px 0;
-    background: #F5F5F5;
+    background: #EEE;
 }
 
 .form-signin {
@@ -16,20 +16,41 @@ body {
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     
-    box-shadow: 0 1px 2px rgba(0,0,0,.5);
-    -o-box-shadow: 0 1px 2px rgba(0,0,0,.5);
-    -ms-box-shadow: 0 1px 2px rgba(0,0,0,.5);
-    -moz-box-shadow: 0 1px 2px rgba(0,0,0,.5);
-    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.5);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    -o-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    -ms-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    -moz-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 
-.form-signin .form-signin-heading, .form-signin .checkbox {
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
     margin-bottom: 10px;
 }
 
-.form-signin input[type="text"], .form-signin input[type="password"] {
+.form-signin input[type="text"],
+.form-signin input[type="password"] {
     font-size: 16px;
     height: auto;
     margin-bottom: 15px;
     padding: 7px 9px;
+}
+
+.message-box {
+    padding: 20px;
+    margin: 0 auto;
+    background: #FFF;
+    border: 1px solid #CCC;
+    
+    border-radius: 10px;
+    -o-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    -o-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    -ms-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    -moz-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }

@@ -2,60 +2,74 @@
 
 defined('BASEPATH') or die('Access deny!');
 
-class Login extends CI_Controller {
+require_once(APPPATH.'controllers/base'.EXT);
+
+class Login extends Base {
+	
+	private $errmsg = '';
+	
+	private $form_rules = array(
+		array(
+			'field' => 'account',
+			'label' => 'Account',
+			'rules' => 'required'
+		),
+		array(
+			'field' => 'password',
+			'label' => 'Password',
+			'rules' => 'required',
+		),
+	);
     
     public function __construct() {
         parent::__construct();
 		$this->load->model('AdminModel');
-		$this->load->library('pagination');
     }
     
 	public function index() {
-		$config = array(
-			array(
-				'field' => 'account',
-				'label' => 'Account',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'password',
-				'label' => 'Password',
-				'rules' => 'required',
-			),
-		);
-		$this->form_validation->set_rules($config);
+		$this->form_validation->set_rules($this->form_rules);
 		
-        if ($this->form_validation->run() == false) {
-			$this->show();
-		} else {
+		if ($this->hasLogin()) {
+			$this->showMessage('/admin/home', 'You have login!', 2000);
+			return;
+		}
+		
+        if (!! $this->form_validation->run()) {
 			$this->action();
+		} else {
+			$this->show();
 		}
 	}
-    
+	
     private function action() {
         $account = $this->input->post('account');
         $password = $this->input->post('password');
         
-        $result_set = $this->AdminModel->find(array(
+        $resultSet = $this->AdminModel->find(array(
             'account' => $account,
         ), 1, 0);
 		
-        if (empty($result_set)) {
-			echo 'No such user!';
+        if (empty($resultSet)) {
+			$this->show(array( 'errmsg' => 'Account is not existed.', ));
 			return;
         }
-        $admin = $result_set[0];
+		
+        $admin = $resultSet[0];
         
         if ($admin->password != md5($password)) {
-			echo 'Password incorrect!';
+			$this->show(array( 'errmsg' => 'Password incorrect!', ));
 			return;
 		}
-		echo 'ok';
+		
+		$this->session->set_userdata('ciic_account', $account);
+		$this->session->set_userdata('ciic_haslogin', true);
+		
+		redirect('/admin/home');
     }
     
-    private function show() {
+    private function show($data = array()) {
 		$this->load->view('header');
-        $this->load->view('admin/login');
+        $this->load->view('admin/login', $data);
 		$this->load->view('footer');
     }
 }

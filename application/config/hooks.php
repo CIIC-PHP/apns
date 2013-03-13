@@ -12,9 +12,9 @@
 
 $hook['pre_controller'] = array(
     array(
-        'class' => 'TestHook',
-        'function' => 'test',
-        'filename' => 'TestHook.php',
+        'class' => 'LoginHook',
+        'function' => 'check',
+        'filename' => 'LoginHook.php',
         'filepath' => 'hooks',
     ),
 );
