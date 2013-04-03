@@ -8,9 +8,6 @@ class Logout extends Base {
     
     public function __construct() {
         parent::__construct();
-		$this->load->model('AdminModel');
-		$this->load->library('pagination');
-		$this->load->helper('url');
     }
     
 	public function index() {

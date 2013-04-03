@@ -12,14 +12,14 @@ class BaseModel extends CI_Model {
     }
     
     public function __get($key) {
-        if (isset($this->attr[$key])) {
+        if (array_key_exists($key, $this->attr)) {
             return $this->attr[$key];
         }
         return parent::__get($key);
     }
     
     public function __set($key, $val) {
-        if (isset($this->attr[$key])) {
+        if (array_key_exists($key, $this->attr)) {
             $this->attr[$key] = $val;
             return;
         }

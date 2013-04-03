@@ -2,26 +2,18 @@
 
 defined('BASEPATH') or die('Access deny!');
 
-class Sub extends CI_Controller {
+class Service extends CI_Controller {
     
     public function __construct() {
         parent::__construct();
 		$this->load->model('UserModel');
     }
-	
+    
 	public function index() {
 		show_404();
 	}
-	
-	public function dev($appId = '', $deviceToken = '') {
-		$this->action($appId, $deviceToken, UserModel::STATUS_TYPE_DEV);
-	}
     
-	public function pro($appId = '', $deviceToken = '') {
-		$this->action($appId, $deviceToken);
-	}
-	
-	private function action($appId = '', $deviceToken = '', $status = UserModel::STATUS_TYPE_PRO) {
+    public function sub($appId = '', $deviceToken = '', $status = UserModel::STATUS_TYPE_PRO) {
 		// Find the user
 		$resultSet = $this->UserModel->find(array(
 			'deviceToken' => $deviceToken,
@@ -35,9 +27,8 @@ class Sub extends CI_Controller {
 			$this->UserModel->status = $status;
 			$this->UserModel->aid = $appId;
 			$this->UserModel->add();
-			return array(
-				'msg' => 'success to register',
-			);
+			echo 'success to register';
+			return;
 		}
 		
 		$user = $resultSet[0];
@@ -50,14 +41,18 @@ class Sub extends CI_Controller {
 			$this->UserModel->aid = $user->aid;
 			$this->UserModel->status = UserModel::STATUS_TYPE_PRO;
 			$this->UserModel->update($user);
-			return array(
-				'msg' => 'success to update',
-			);
 		}
 		
 		// Do nothing
-		return array(
-			'msg' => 'already in used',
-		);
-	}
+		echo 'success to update';
+		return;
+    }
+    
+    public function unsub($appId = '', $deviceToken = '') {
+        if (! empty($appId) and ! empty($deviceToken)) {
+            echo $appId;
+            echo '<hr/>';
+            echo $deviceToken;
+        }
+    }
 }

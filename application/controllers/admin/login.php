@@ -68,7 +68,12 @@ class Login extends Base {
     }
     
     private function show($data = array()) {
-		$this->load->view('header');
+    	$this->load->view('header', array(
+			'title' => 'Login',
+			'styles' => array(
+				'page.css',
+			),
+		));
         $this->load->view('admin/login', $data);
 		$this->load->view('footer');
     }
