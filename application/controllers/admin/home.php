@@ -12,9 +12,7 @@ class Home extends Base {
     }
 	
 	public function index() {
-		if (! $this->hasLogin()) {
-			redirect('admin/login');
-		}
+		if (! $this->checkLogin()) return;
 		
 		$account = $this->session->userdata('ciic_account');
 		$resultSet = $this->AdminModel->find(array(

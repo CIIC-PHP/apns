@@ -2,7 +2,7 @@
 
 defined('BASEPATH') or die('Access deny!');
 
-class Sub extends CI_Controller {
+class Unsub extends CI_Controller {
     
     public function __construct() {
         parent::__construct();
@@ -32,37 +32,33 @@ class Sub extends CI_Controller {
 		
 		// Check the user
 		if (empty($resultSet)) {
-			// Add a new user
-			$this->UserModel->deviceToken = $deviceToken;
-			$this->UserModel->status = $status;
-			$this->UserModel->aid = $appId;
-			$this->UserModel->add();
+			// No such user
 			return array(
-				'msg' => 'success to register',
+				'msg' => 'no such user',
 			);
 		}
 		
 		$user = $resultSet[0];
 		
 		// Check the status
-		if (UserModel::STATUS_TYPE_NIL == $user->status) {
+		if (UserModel::STATUS_TYPE_NIL != $user->status) {
 			// Update the status
 			$this->UserModel->deviceToken = $user->deviceToken;
 			$this->UserModel->createAt = $user->createAt;
 			$this->UserModel->aid = $user->aid;
-			$this->UserModel->status = UserModel::STATUS_TYPE_PRO;
+			$this->UserModel->status = UserModel::STATUS_TYPE_NIL;
 			$this->UserModel->update(array(
 				'deviceToken' => $user->deviceToken,
 				'status' => $user->status,
 			));
 			return array(
-				'msg' => 'success to update',
+				'msg' => 'success to unsubscribe',
 			);
 		}
 		
 		// Do nothing
 		return array(
-			'msg' => 'already in used',
+			'msg' => 'already unsubscribed',
 		);
 	}
 }

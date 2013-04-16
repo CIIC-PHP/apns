@@ -18,6 +18,14 @@ class Base extends CI_Controller {
 		return (! empty($account) and $hasLogin);
 	}
 	
+	protected function checkLogin() {
+		if ($this->hasLogin()) {
+			return true;
+		}
+		$this->showMessage('/admin/login', 'You must login!', 2000);
+		return false;
+	}
+	
 	// Message box page
 	protected function showMessage($uri, $message = '', $delay = false) {
 		if (! $delay) {
