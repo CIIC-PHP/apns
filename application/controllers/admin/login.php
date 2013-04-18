@@ -9,16 +9,8 @@ class Login extends Base {
 	private $errmsg = '';
 	
 	private $form_rules = array(
-		array(
-			'field' => 'account',
-			'label' => 'Account',
-			'rules' => 'required'
-		),
-		array(
-			'field' => 'password',
-			'label' => 'Password',
-			'rules' => 'required',
-		),
+		array( 'field' => 'account',  'label' => 'Account',  'rules' => 'required', ),
+		array( 'field' => 'password', 'label' => 'Password', 'rules' => 'required', ),
 	);
     
     public function __construct() {

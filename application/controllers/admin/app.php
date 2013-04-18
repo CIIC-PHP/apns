@@ -6,28 +6,32 @@ require_once(APPPATH.'controllers/base'.EXT);
 
 class App extends Base {
     
-    public function __construct() {
-        parent::__construct();
-        $this->load->model('AppModel');
-    }
-    
-    private $form_rules = array(
+	private $errmsg = '';
+	
+	private $form_rules = array(
         'create' => array(
-            array( 'field' => 'id', 'label' => 'Id', 'rules' => 'required' ),
+            array( 'field' => 'id', 'label' => 'Id', 'rules' => 'required', ),
             array( 'field' => 'name', 'label' => 'Name', 'rules' => 'required', ),
             array( 'field' => 'description', 'label' => 'Description', 'rules' => 'required', ),
-            array( 'field' => 'caDev', 'label' => 'Certificate (Develop)', 'rules' => 'required', ),
-            array( 'field' => 'caPro', 'label' => 'Certificate (Product)', 'rules' => 'required', ),
         ),
         'modify' => array(
             array( 'field' => 'name', 'label' => 'Name', 'rules' => 'required', ),
             array( 'field' => 'description', 'label' => 'Description', 'rules' => 'required', ),
-            array( 'field' => 'caDev', 'label' => 'Certificate (Develop)', 'rules' => 'required', ),
-            array( 'field' => 'caPro', 'label' => 'Certificate (Product)', 'rules' => 'required', ),
             array( 'field' => 'status', 'label' => 'Password', 'rules' => 'required', ),
         ),
 	);
-    
+	
+    public function __construct() {
+        parent::__construct();
+        $this->load->model('AppModel');
+		$upload_config = array();
+		$upload_config['upload_path'] = FCPATH.'upload/';
+		$upload_config['allowed_types'] = 'pem';
+		//$upload_config['max_size'] = '100';
+		
+		$this->load->library('upload', $upload_config);
+    }
+	
 	public function index() {
         if (! $this->checkLogin()) return;
         show_404();
@@ -44,6 +48,16 @@ class App extends Base {
             $this->showCreate();
         }
     }
+	
+	public function show($id) {
+		$apps = $this->AppModel->find(array(
+			'id' => $id,
+		));
+		$data = array(
+			'app' => $apps[0],
+		);
+		$this->load->view('admin/app/show', $data);
+	}
     
     public function modify($id) {
         if (! $this->checkLogin()) return;
@@ -83,9 +97,35 @@ class App extends Base {
         $id = $this->input->post('id');
         $name = $this->input->post('name');
         $desc = $this->input->post('description');
-        $caDev = $this->input->post('caDev');
-        $caPro = $this->input->post('caPro');
-        
+		
+		// Upload certificate (develop)
+		if (! $this->upload->do_upload('caDev')) {
+			$errmsg = 'You need to upload your dev.pem'.$this->upload->display_errors();
+			$data = array(
+				'errmsg' => $errmsg,
+			);
+			$this->showCreate($data);
+			return;
+		}
+		
+		$caDevInfo = $this->upload->data();
+		
+		// upload certificate (product)
+		if (! $this->upload->do_upload('caPro')) {
+			// remove certificate (develop)
+			unlink($caDevInfo['full_path']);
+			
+			$errmsg = 'You need to upload your pro.pem'.$this->upload->display_errors();
+			$data = array(
+				'errmsg' => $errmsg,
+			);
+			$this->showCreate($data);
+			return;
+		}
+		
+		$caProInfo = $this->upload->data();
+		
+		/*
         if (preg_match('^[_A-Za-z][_A-Za-z0-9]+$', $id)) {
             $this->AppModel->id = $id;
             $this->AppModel->name = $name;
@@ -95,6 +135,15 @@ class App extends Base {
             $this->AppModel->status = AppModel::STATUS_TYPE_DEV;
             $this->AppModel->save();
         }
+        */
+		$data = array(
+			'id' => $id,
+			'name' => $name,
+			'desc' => $desc,
+			'cadev' => $caDevInfo,
+			'capro' => $caProInfo,
+		);
+		echo '<pre>'.print_r($data, true).'</pre>';
     }
     
     private function doModify() {}
