@@ -20,7 +20,7 @@ class AdminModel extends BaseModel {
     }
     
     public function __set($key, $val) {
-        if ('role' == $key and self::ROLE_TYPE_FOUNDER != $val and self::ROLE_TYPE_MANAGER != $val and self::ROLE_TYPE_GUEST != $val) {
+        if ('role' == $key and ROLE_TYPE_FOUNDER != $val and ROLE_TYPE_MANAGER != $val and ROLE_TYPE_GUEST != $val) {
             show_error(__CLASS__.' attribute called "role" must be a value of (founder, manager, guest). you set "role" with "'.$val.'"');
         }
         parent::__set($key, $val);

@@ -24,7 +24,7 @@ class AppModel extends BaseModel {
     }
     
     public function __set($key, $val) {
-        if ('status' == $key and self::STATUS_TYPE_DEV != $val and self::STATUS_TYPE_PRO != $val and self::STATUS_TYPE_NIL != $val) {
+        if ('status' == $key and STATUS_TYPE_DEV != $val and STATUS_TYPE_PRO != $val and STATUS_TYPE_NIL != $val) {
             show_error(__CLASS__.' attribute called "status" must be a value of dev, pro, nil. you set "status" with "'.$val.'"');
         }
         parent::__set($key, $val);

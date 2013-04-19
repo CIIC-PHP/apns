@@ -36,27 +36,6 @@ class App extends Base {
         if (! $this->checkLogin()) return;
         show_404();
     }
-	
-	public function show($id = '') {
-		$apps = $this->AppModel->find(array(
-			'id' => $id,
-		));
-		
-		if (empty($apps)) {
-			$this->showMessage('/admin/app/create', 'The Application does not exists!', 2000);
-			return;
-		}
-		
-		$data = array(
-			'app' => $apps[0],
-		);
-		
-		$this->load->view('header', array(
-			'title' => 'Application Information',
-		));
-        $this->load->view('admin/app/show', $data);
-		$this->load->view('footer');
-	}
     
     public function create() {
         if (! $this->checkLogin()) return;
@@ -70,25 +49,29 @@ class App extends Base {
         }
     }
 	
-    public function modify($id = '') {
+	public function show($id) {
+		$apps = $this->AppModel->find(array(
+			'id' => $id,
+		));
+		$data = array(
+			'app' => $apps[0],
+		);
+		$this->load->view('admin/app/show', $data);
+	}
+    
+    public function modify($id) {
         if (! $this->checkLogin()) return;
         
-        $this->form_validation->set_rules($this->form_rules['modify']);
-        
-        if (!! $this->form_validation->run()) {
-            $this->doModify();
-        } else {
-            $this->showModify($id);
-        }
+        echo 'modify';
     }
     
-    public function deploy($id = '') {
+    public function deploy($id) {
         if (! $this->checkLogin()) return;
         
         echo 'deploy';
     }
     
-    public function delete($id = '') {
+    public function delete($id) {
         if (! $this->checkLogin()) return;
         
         echo 'delete';
@@ -102,23 +85,7 @@ class App extends Base {
 		$this->load->view('footer');
     }
     
-    private function showModify($id = '', $data = array()) {
-		$apps = $this->AppModel->find(array(
-			'id' => $id,
-		));
-		
-		if (empty($apps)) {
-			$this->showMessage('/admin/app/create', 'The Application does not exists!', 2000);
-			return;
-		}
-		
-		$data['app'] = $apps[0];
-		$data['status'] = array(
-			'Development' => AppModel::STATUS_TYPE_DEV,
-			'Production' => AppModel::STATUS_TYPE_PRO,
-			'Unavailable' => AppModel::STATUS_TYPE_NIL,
-		);
-		
+    private function showModify($data = array()) {
         $this->load->view('header', array(
 			'title' => 'Application Modify',
 		));
@@ -130,67 +97,53 @@ class App extends Base {
         $id = $this->input->post('id');
         $name = $this->input->post('name');
         $desc = $this->input->post('description');
-		$caDevNeed = $this->input->post('caDevNeed');
-		$caProNeed = $this->input->post('caProNeed');
-		$caDevInfo = '';
-		$caProInfo = '';
-		$caDev = '';
-		$caPro = '';
 		
 		// Upload certificate (develop)
-		if ('caDevNeed' == $caDevNeed) {
-			// Check upload
-			if (! $this->upload->do_upload('caDev')) {
-				$errmsg = 'You need to upload your dev.pem'.$this->upload->display_errors();
-				$data = array(
-					'errmsg' => $errmsg,
-				);
-				$this->showCreate($data);
-				return;
-			}
-			// Get upload information
-			$caDevInfo = $this->upload->data();
-			$caDev = $caDevInfo['file_path'].$id.'_dev.pem';
-			if (file_exists($caDev)) {
-				unlink($caDev);
-			}
-			rename($caDevInfo['full_path'], $caDev);
+		if (! $this->upload->do_upload('caDev')) {
+			$errmsg = 'You need to upload your dev.pem'.$this->upload->display_errors();
+			$data = array(
+				'errmsg' => $errmsg,
+			);
+			$this->showCreate($data);
+			return;
 		}
 		
-		// Upload certificate (product)
-		if ('caProNeed' == $caProNeed) {
-			if (! $this->upload->do_upload('caPro')) {
-				if ('caDevNeed' == $caDevNeed) {
-					// Remove certificate (develop) if upload
-					unlink($caDevInfo['full_path']);
-				}
-				$errmsg = 'You need to upload your pro.pem'.$this->upload->display_errors();
-				$data = array(
-					'errmsg' => $errmsg,
-				);
-				$this->showCreate($data);
-				return;
-			}
-			// Get upload information
-			$caProInfo = $this->upload->data();
-			$caPro = $caProInfo['file_path'].$id.'_pro.pem';
-			if (file_exists($caPro)) {
-				unlink($caPro);
-			}
-			rename($caProInfo['full_path'], $caPro);
+		$caDevInfo = $this->upload->data();
+		
+		// upload certificate (product)
+		if (! $this->upload->do_upload('caPro')) {
+			// remove certificate (develop)
+			unlink($caDevInfo['full_path']);
+			
+			$errmsg = 'You need to upload your pro.pem'.$this->upload->display_errors();
+			$data = array(
+				'errmsg' => $errmsg,
+			);
+			$this->showCreate($data);
+			return;
 		}
 		
-        if (preg_match('/^[_A-Za-z][_A-Za-z0-9]+$/', $id)) {
+		$caProInfo = $this->upload->data();
+		
+		/*
+        if (preg_match('^[_A-Za-z][_A-Za-z0-9]+$', $id)) {
             $this->AppModel->id = $id;
             $this->AppModel->name = $name;
             $this->AppModel->description = $desc;
             $this->AppModel->caDev = $caDev;
             $this->AppModel->caPro = $caPro;
             $this->AppModel->status = AppModel::STATUS_TYPE_DEV;
-            $this->AppModel->add();
+            $this->AppModel->save();
         }
-		
-		$this->showMessage('/admin/app/show/'.$id);
+        */
+		$data = array(
+			'id' => $id,
+			'name' => $name,
+			'desc' => $desc,
+			'cadev' => $caDevInfo,
+			'capro' => $caProInfo,
+		);
+		echo '<pre>'.print_r($data, true).'</pre>';
     }
     
     private function doModify() {}
